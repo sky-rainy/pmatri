@@ -12,8 +12,6 @@ import (
 	zero "github.com/wdvxdr1123/ZeroBot"
 	"github.com/wdvxdr1123/ZeroBot/message"
 
-	ctrl "github.com/FloatTech/zbpctrl"
-	"github.com/FloatTech/zbputils/control"
 	"github.com/FloatTech/zbputils/process"
 )
 
@@ -24,21 +22,9 @@ const (
 	res = "https://gitcode.net/acfunghost/pm/-/raw/pmimg/"
 )
 
-func init() { // 插件主体
-	engine := control.Register(servicename, &ctrl.Options[*zero.Ctx]{
-		DisableOnDefault: false,
-		Help:             "想了解派蒙更多吗？\n",
-		OnEnable: func(ctx *zero.Ctx) {
-			process.SleepAbout1sTo2s()
-			ctx.SendChain(message.Text("嗯呜呜……？"))
-		},
-		OnDisable: func(ctx *zero.Ctx) {
-			process.SleepAbout1sTo2s()
-			ctx.SendChain(message.Text("Zzz……Zzz……"))
-		},
-	})
+func init() {
 	// 被喊名字
-	engine.OnFullMatch("", zero.OnlyToMe, isAtriSleeping).SetBlock(true).
+	zero.OnFullMatch("", zero.OnlyToMe, isAtriSleeping).SetBlock(true).
 		Handle(func(ctx *zero.Ctx) {
 			var nickname = zero.BotConfig.NickName[0]
 			process.SleepAbout1sTo2s()
@@ -58,7 +44,7 @@ func init() { // 插件主体
 			}
 		})
 	// 戳一戳
-	engine.On("notice/notify/poke", zero.OnlyToMe, isAtriSleeping).SetBlock(false).
+	zero.On("notice/notify/poke", zero.OnlyToMe, isAtriSleeping).SetBlock(false).
 		Handle(func(ctx *zero.Ctx) {
 			var nickname = zero.BotConfig.NickName[0]
 			process.SleepAbout1sTo2s()
@@ -73,7 +59,7 @@ func init() { // 插件主体
 				// 频繁触发，不回复
 			}
 		})
-	engine.OnKeywordGroup([]string{"草你妈", "操你妈", "脑瘫", "脑残", "废柴", "fw", "five", "废物", "战斗", "爬", "爪巴", "sb", "SB", "傻B", "垃圾", "傻逼", "傻屌", "2B", "2b", "傻叉"}, isAtriSleeping, zero.OnlyToMe).SetBlock(true).
+	zero.OnKeywordGroup([]string{"草你妈", "操你妈", "脑瘫", "脑残", "废柴", "fw", "five", "废物", "战斗", "爬", "爪巴", "sb", "SB", "傻B", "垃圾", "傻逼", "傻屌", "2B", "2b", "傻叉"}, isAtriSleeping, zero.OnlyToMe).SetBlock(true).
 		Handle(func(ctx *zero.Ctx) {
 			process.SleepAbout1sTo2s()
 			ctx.SetGroupBan(
@@ -83,14 +69,14 @@ func init() { // 插件主体
 			)
 			ctx.SendChain(message.Text("大坏蛋！！闭嘴~"), randImage("pmshengqi3.png", "pmshengqi4.png", "pmshengqi2.png"))
 		})
-	engine.OnKeywordGroup([]string{"啊这"}, isAtriSleeping).SetBlock(true).
+	zero.OnKeywordGroup([]string{"啊这"}, isAtriSleeping).SetBlock(true).
 		Handle(func(ctx *zero.Ctx) {
 			process.SleepAbout1sTo2s()
 			if rand.Intn(2) == 0 {
 				ctx.SendChain(randImage("pmfeijie.png", "pmdanxin.png"))
 			}
 		})
-	engine.OnFullMatchGroup([]string{"？", "?", "¿"}, isAtriSleeping).SetBlock(true).
+	zero.OnFullMatchGroup([]string{"？", "?", "¿"}, isAtriSleeping).SetBlock(true).
 		Handle(func(ctx *zero.Ctx) {
 			process.SleepAbout1sTo2s()
 			switch rand.Intn(5) {
@@ -100,7 +86,7 @@ func init() { // 插件主体
 				ctx.SendChain(randImage("pmwenhao.png", "pmwenhao2.png", "pmwenhao3.png", "pmwenhao4.png"))
 			}
 		})
-	engine.OnKeyword("离谱", isAtriSleeping).SetBlock(true).
+	zero.OnKeyword("离谱", isAtriSleeping).SetBlock(true).
 		Handle(func(ctx *zero.Ctx) {
 			switch rand.Intn(5) {
 			case 0:
