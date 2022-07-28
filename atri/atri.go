@@ -15,12 +15,6 @@ import (
 	ctrl "github.com/FloatTech/zbpctrl"
 	"github.com/FloatTech/zbputils/control"
 	"github.com/FloatTech/zbputils/process"
-	"github.com/wdvxdr1123/ZeroBot/extension/rate"
-)
-
-var (
-	// 戳一戳
-	poke = rate.NewManager[int64](time.Minute*5, 8)
 )
 
 const (
@@ -67,11 +61,12 @@ func init() { // 插件主体
 	engine.On("notice/notify/poke", zero.OnlyToMe, isAtriSleeping).SetBlock(false).
 		Handle(func(ctx *zero.Ctx) {
 			var nickname = zero.BotConfig.NickName[0]
-			switch {
-			case poke.Load(ctx.Event.GroupID).AcquireN(3):
-				process.SleepAbout1sTo2s()
+			process.SleepAbout1sTo2s()
+			switch rand.Intn(2) {
+			case 0:
+
 				ctx.SendChain(message.Text("请不要戳", nickname, " ！不然我就生气了！"), randImage("pmshengqi.png", "pmfeijie.png"))
-			case poke.Load(ctx.Event.GroupID).Acquire():
+			case 1:
 				process.SleepAbout1sTo2s()
 				ctx.SendChain(message.Text("喂(#`O′) 戳", nickname, "干嘛！"), randImage("pmmiaoshi.png", "pmnadao.png"))
 			default:
