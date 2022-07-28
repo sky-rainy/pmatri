@@ -48,9 +48,8 @@ func init() {
 		Handle(func(ctx *zero.Ctx) {
 			var nickname = zero.BotConfig.NickName[0]
 			process.SleepAbout1sTo2s()
-			switch rand.Intn(2) {
+			switch rand.Intn(3) {
 			case 0:
-
 				ctx.SendChain(message.Text("请不要戳", nickname, " ！不然我就生气了！"), randImage("pmshengqi.png", "pmfeijie.png"))
 			case 1:
 				process.SleepAbout1sTo2s()
@@ -69,11 +68,46 @@ func init() {
 			)
 			ctx.SendChain(message.Text("大坏蛋！！闭嘴~"), randImage("pmshengqi3.png", "pmshengqi4.png", "pmshengqi2.png"))
 		})
-	zero.OnKeywordGroup([]string{"啊这"}, isAtriSleeping).SetBlock(true).
+	zero.OnKeywordGroup([]string{"谢谢", "3q", "非常感谢"}, zero.OnlyToMe, isAtriSleeping).SetBlock(true).
+		Handle(func(ctx *zero.Ctx) {
+			process.SleepAbout1sTo2s()
+			switch rand.Intn(3) {
+			case 0:
+				ctx.SendChain(message.Text("不客气"), randImage("pmwunai.png", "pmweixiao.png"))
+			case 1:
+				process.SleepAbout1sTo2s()
+				ctx.SendChain(message.Text("客气了，下次请我好吃的就行"), randImage("pmwunai.png", "pmweixiao.png"))
+			default:
+				// 频繁触发，不回复
+			}
+		})
+	zero.OnKeywordGroup([]string{"啊这", "阿这"}, isAtriSleeping).SetBlock(true).
 		Handle(func(ctx *zero.Ctx) {
 			process.SleepAbout1sTo2s()
 			if rand.Intn(2) == 0 {
 				ctx.SendChain(randImage("pmfeijie.png", "pmdanxin.png"))
+			}
+		})
+	zero.OnKeywordGroup([]string{"你好可爱", "可爱", "好可爱啊"}, isAtriSleeping).SetBlock(true).
+		Handle(func(ctx *zero.Ctx) {
+			process.SleepAbout1sTo2s()
+			ctx.SendChain(randText("谢谢", "哎呀不要老夸我，我会害羞的~", "哈哈~谢谢"), randImage("pmsaobaoqing.png", "pmmiaoshi3.png"))
+		})
+	zero.OnKeywordGroup([]string{"大佬", "厉害", "666", "感谢大佬"}, isAtriSleeping).SetBlock(true).
+		Handle(func(ctx *zero.Ctx) {
+			process.SleepAbout1sTo2s()
+			if rand.Intn(2) == 0 {
+				ctx.SendChain(randImage("pmdalao2.png", "pmdalao.png"))
+			}
+		})
+	zero.OnKeywordGroup([]string{"是不是", "你说呢"}, isAtriSleeping).SetBlock(true).
+		Handle(func(ctx *zero.Ctx) {
+			process.SleepAbout1sTo2s()
+			switch rand.Intn(5) {
+			case 0:
+				ctx.SendChain(randText("对对", "嗯嗯", "可能是吧"), randImage("pmmiaoshi3.png", "pmmiaoshi.png"))
+			case 1, 2:
+				ctx.SendChain(randImage("pmwenhao.png", "pmwenhao2.png", "pmwenhao3.png", "pmwenhao4.png"))
 			}
 		})
 	zero.OnFullMatchGroup([]string{"？", "?", "¿"}, isAtriSleeping).SetBlock(true).
@@ -90,9 +124,9 @@ func init() {
 		Handle(func(ctx *zero.Ctx) {
 			switch rand.Intn(5) {
 			case 0:
-				ctx.SendChain(randText("?", "？", "嗯？", "(。´・ω・)ん?", "ん？"))
+				ctx.SendChain(randText("?", "？", "嗯？", "(。´・ω・)?", "？？？"))
 			case 1, 2:
-				ctx.SendChain(randImage("pmfeijie2.png"))
+				ctx.SendChain(randImage("pmfeijie2.png", "pmasir.png"))
 			}
 		})
 }
