@@ -6,13 +6,19 @@ Package atri 本文件基于 https://github.com/Kyomotoi/ATRI
 package atri
 
 import (
+	"fmt"
+	"log"
 	"math/rand"
+	"net/url"
+	"regexp"
+	"strconv"
 	"time"
 
+	"github.com/FloatTech/AnimeAPI/aireply"
+	"github.com/FloatTech/zbputils/process"
+	"github.com/pkumza/numcn"
 	zero "github.com/wdvxdr1123/ZeroBot"
 	"github.com/wdvxdr1123/ZeroBot/message"
-
-	"github.com/FloatTech/zbputils/process"
 )
 
 const (
@@ -20,6 +26,11 @@ const (
 	servicename = "pm"
 	// ATRI 表情的 codechina 镜像
 	res = "https://gitcode.net/acfunghost/pm/-/raw/pmimg/"
+)
+
+var (
+	re    = regexp.MustCompile(`(\-|\+)?\d+(\.\d+)?`)
+	cnapi = "http://233366.proxy.nscc-gz.cn:8888?speaker=%s&text=%s"
 )
 
 func init() {
@@ -31,14 +42,32 @@ func init() {
 
 			switch rand.Intn(2) {
 			case 0:
-				ctx.SendChain(message.Text(
-					[]string{
-						nickname + "在此，有何贵干？~",
-						"什么？什么？",
-						"在呢！在呢！",
-						nickname + "不在呢~",
-					}[rand.Intn(4)],
-				))
+				msg := ctx.ExtractPlainText()
+				// 获取回复模式
+				r := aireply.NewAIReply("小爱")
+				// 获取回复的文本
+				reply := r.TalkPlain(msg, zero.BotConfig.NickName[0])
+
+				// 获取语言
+				record := message.Record(fmt.Sprintf(cnapi, url.QueryEscape(nickname), url.QueryEscape(
+					// 将数字转文字
+					re.ReplaceAllStringFunc(reply, func(s string) string {
+						f, err := strconv.ParseFloat(s, 64)
+						if err != nil {
+							log.Println("获取语音err : ", err)
+							return s
+						}
+						return numcn.EncodeFromFloat64(f)
+					}),
+				))).Add("cache", 0)
+				if record.Data == nil {
+					ctx.SendChain(message.Reply(ctx.Event.MessageID), message.Text(reply))
+					return
+				}
+				// 发送语音
+				if ID := ctx.SendChain(record); ID.ID() == 0 {
+					ctx.SendChain(message.Reply(ctx.Event.MessageID), message.Text(reply))
+				}
 			case 1:
 				ctx.SendChain(message.Text("我在呢，怎么啦？"), randImage("pmzixinshuai.png", "pmzai.png"))
 			}
