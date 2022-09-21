@@ -35,42 +35,40 @@ var (
 
 func init() {
 	// 被喊名字
-	zero.OnFullMatch("", zero.OnlyToMe, isAtriSleeping).SetBlock(true).
+	zero.OnRegex(`^派蒙(.*)$`, zero.OnlyToMe, isAtriSleeping).SetBlock(true).
 		Handle(func(ctx *zero.Ctx) {
 			var nickname = zero.BotConfig.NickName[0]
+			msg := ctx.State["regex_matched"].([]string)[1]
 			process.SleepAbout1sTo2s()
+			// 获取回复模式
+			r := aireply.NewAIReply("小爱")
+			// 获取回复的文本
+			reply := r.TalkPlain(msg, zero.BotConfig.NickName[0])
 
-			switch rand.Intn(2) {
-			case 0:
-				msg := ctx.ExtractPlainText()
-				// 获取回复模式
-				r := aireply.NewAIReply("小爱")
-				// 获取回复的文本
-				reply := r.TalkPlain(msg, zero.BotConfig.NickName[0])
-
-				// 获取语言
-				record := message.Record(fmt.Sprintf(cnapi, url.QueryEscape(nickname), url.QueryEscape(
-					// 将数字转文字
-					re.ReplaceAllStringFunc(reply, func(s string) string {
-						f, err := strconv.ParseFloat(s, 64)
-						if err != nil {
-							log.Println("获取语音err : ", err)
-							return s
-						}
-						return numcn.EncodeFromFloat64(f)
-					}),
-				))).Add("cache", 0)
-				if record.Data == nil {
-					ctx.SendChain(message.Reply(ctx.Event.MessageID), message.Text(reply))
-					return
-				}
-				// 发送语音
-				if ID := ctx.SendChain(record); ID.ID() == 0 {
-					ctx.SendChain(message.Reply(ctx.Event.MessageID), message.Text(reply))
-				}
-			case 1:
-				ctx.SendChain(message.Text("我在呢，怎么啦？"), randImage("pmzixinshuai.png", "pmzai.png"))
+			// 获取语言
+			record := message.Record(fmt.Sprintf(cnapi, url.QueryEscape(nickname), url.QueryEscape(
+				// 将数字转文字
+				re.ReplaceAllStringFunc(reply, func(s string) string {
+					f, err := strconv.ParseFloat(s, 64)
+					if err != nil {
+						log.Println("获取语音err : ", err)
+						return s
+					}
+					return numcn.EncodeFromFloat64(f)
+				}),
+			))).Add("cache", 0)
+			if record.Data == nil {
+				ctx.SendChain(message.Reply(ctx.Event.MessageID), message.Text(reply))
+				return
 			}
+			// 发送语音
+			ctx.SendChain(message.Reply(ctx.Event.MessageID), message.Text(reply))
+			// switch rand.Intn(2) {
+			// case 0:
+
+			// case 1:
+			// 	ctx.SendChain(message.Text("我在呢，怎么啦？"), randImage("pmzixinshuai.png", "pmzai.png"))
+			// }
 		})
 	// 戳一戳
 	zero.On("notice/notify/poke", zero.OnlyToMe, isAtriSleeping).SetBlock(false).
